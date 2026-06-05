@@ -1,0 +1,14 @@
+package com.foodordering.menuservice.dto;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.math.BigDecimal;
+
+@Data
+@Builder
+public class MenuItemResponse {
+    private Long id;
+    private String name;
+    private BigDecimal price;
+}
