@@ -45,4 +45,10 @@ public class OrderController {
     public ResponseEntity<Order> updateStatus(@PathVariable Long id, @RequestParam OrderStatus status) {
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
     }
+
+    @PutMapping("/{id}/items")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Order> addItems(@PathVariable Long id, @RequestBody OrderRequestDTO request) {
+        return ResponseEntity.ok(orderService.addItemsToOrder(id, request));
+    }
 }

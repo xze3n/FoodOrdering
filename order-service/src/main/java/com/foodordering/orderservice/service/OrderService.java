@@ -36,7 +36,7 @@ public class OrderService {
             OrderItem orderItem = new OrderItem();
             orderItem.setMenuItemId(menuItem.getId());
             orderItem.setQuantity(itemRequest.getQuantity());
-            orderItem.setPriceAtTimeOfOrder(orderItem.getPriceAtTimeOfOrder());
+            orderItem.setPriceAtTimeOfOrder(menuItem.getPrice());
 
             order.addItem(orderItem);
 
@@ -57,6 +57,37 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         order.setStatus(newStatus);
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order addItemsToOrder(Long orderId, OrderRequestDTO request) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+
+        if (order.getStatus() != OrderStatus.CREATED) {
+            throw new RuntimeException("you cannot add items anymore, your order is already completed");
+        }
+
+        BigDecimal total = order.getTotalPrice();
+
+        for (OrderItemRequestDTO itemRequest : request.getOrderItems()) {
+            MenuItemDTO menuItem = menuServiceClient.getMenuItem(itemRequest.getRestaurantId(), itemRequest.getMenuItemId());
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setMenuItemId(menuItem.getId());
+            orderItem.setQuantity(itemRequest.getQuantity());
+            orderItem.setPriceAtTimeOfOrder(menuItem.getPrice());
+
+            order.addItem(orderItem);
+
+
+            BigDecimal itemTotal = menuItem.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
+            total = total.add(itemTotal);
+        }
+
+        order.setTotalPrice(total);
         return orderRepository.save(order);
     }
 }
