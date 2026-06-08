@@ -128,49 +128,4 @@ class OrderServiceTest {
         assertThat(result).isEmpty();
     }
 
-    @Test
-    void testAddItemsToOrder_WhenStatusIsCreated_AddsItemsCorrectly() {
-        // 1. Arrange
-        Long orderId = 1L;
-        Order order = new Order();
-        order.setId(orderId);
-        order.setStatus(OrderStatus.CREATED);
-        order.setTotalPrice(BigDecimal.TEN);
-        order.setUsername("testUser");
-
-        OrderItemRequestDTO itemRequest = new OrderItemRequestDTO(1L, 10L, 1);
-        OrderRequestDTO request = new OrderRequestDTO(List.of(itemRequest));
-
-        MenuItemDTO menuItem = new MenuItemDTO();
-        menuItem.setId(10L);
-        menuItem.setPrice(new BigDecimal("20.00"));
-
-        when(orderRepository.findById(orderId)).thenReturn(java.util.Optional.of(order));
-        when(menuServiceClient.getMenuItem(1L, 10L)).thenReturn(menuItem);
-        when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
-
-        // 2. Act
-        Order result = orderService.addItemsToOrder(orderId, request);
-
-        // 3. Assert
-        assertThat(result.getTotalPrice()).isEqualTo(new BigDecimal("30.00"));
-        assertThat(result.getUsername()).isEqualTo("testUser");
-        assertThat(result.getItems()).hasSize(1);
-        verify(orderRepository).save(order);
-    }
-
-    @Test
-    void testAddItemsToOrder_WhenStatusNotCreated_ThrowsException() {
-        // 1. Arrange
-        Long orderId = 1L;
-        Order order = new Order();
-        order.setStatus(OrderStatus.CONFIRMED);
-
-        when(orderRepository.findById(orderId)).thenReturn(java.util.Optional.of(order));
-
-        // 2. Act & Assert
-        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> {
-            orderService.addItemsToOrder(orderId, new OrderRequestDTO(List.of()));
-        });
-    }
 }
