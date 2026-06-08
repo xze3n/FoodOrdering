@@ -30,9 +30,9 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
                         // order creation only for clients
-                        .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAuthority("ROLE_CUSTOMER")
+                        .requestMatchers(HttpMethod.POST, "/orders/**").hasAuthority("ROLE_CUSTOMER")
                         // client sees his orders, admin sees all aorders
-                        .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/orders/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
