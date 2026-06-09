@@ -1,35 +1,24 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
     name: api-gateway
+
   cloud:
     gateway:
       routes:
-        # All /users/** requests forwarded to user-service
-        # user-service controllers should be mapped under /users
         - id: user-service
-          uri: http://${USER_SERVICE_HOST:localhost}:8081
+          uri: http://${USER_SERVICE_HOST:localhost}:${USER_SERVICE_PORT:8081}
           predicates:
             - Path=/users/**
 
-        # All /menu/** requests forwarded to menu-service
-        # menu-service controllers should be mapped under /menu
         - id: menu-service
-          uri: http://${MENU_SERVICE_HOST:localhost}:8082
+          uri: http://${MENU_SERVICE_HOST:localhost}:${MENU_SERVICE_PORT:8082}
           predicates:
             - Path=/menu/**
 
-        # All /orders/** requests forwarded to order-service
-        # order-service controllers should be mapped under /orders
         - id: order-service
-          uri: http://${ORDER_SERVICE_HOST:localhost}:8083
+          uri: http://${ORDER_SERVICE_HOST:localhost}:${ORDER_SERVICE_PORT:8083}
           predicates:
             - Path=/orders/**
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /v3/api-docs
