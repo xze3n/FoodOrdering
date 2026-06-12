@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: foodordering-api-gateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: USER_SERVICE_HOST
+              value: user-service
+            - name: USER_SERVICE_PORT
+              value: "8081"
+            - name: MENU_SERVICE_HOST
+              value: menu-service
+            - name: MENU_SERVICE_PORT
+              value: "8082"
+            - name: ORDER_SERVICE_HOST
+              value: order-service
+            - name: ORDER_SERVICE_PORT
+              value: "8083"
